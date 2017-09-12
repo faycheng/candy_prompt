@@ -23,7 +23,7 @@ class WordCompleter(Completer):
             return text_before_cursor in word
 
     # utils unique 只能保证 custom & history 各自的列表中不出现重复，无法保证 custom & history 没有交集
-    @unique('text', callable=False)
+    @unique(lambda completion: completion.text)
     def get_completions(self, document, complete_event):
         if self.lower is False:
             self.words = [word.lower() for word in self.words]
@@ -52,7 +52,7 @@ class PathCompleter(Completer):
         self.match_type = match_type.upper()
         self.recursion = recursion
 
-    @unique('text', callable=False)
+    @unique(lambda completion: completion.text)
     def get_completions(self, document, complete_event):
         text_before_cursor = document.text_before_cursor.lower()
         list_paths = getattr(PathMatchType, self.match_type).value
