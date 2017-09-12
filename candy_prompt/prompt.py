@@ -1,11 +1,17 @@
 # -*- coding:utf-8 -*-
 
+import os
+import sys
+import ast
+
+# sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+
 import prompt_toolkit
 
-from .completer import *
-from .validator import *
+from candy_prompt.completer import *
+from candy_prompt.validator import *
+from candy_prompt.history import PromptFileHistory as FileHistory
 from enum import Enum
-from prompt_toolkit.history import FileHistory
 from candy import path
 from candy.utils.convertor import str2boo
 
@@ -24,15 +30,14 @@ class PromptType(Enum):
     INT = Converter(int, IntValidator())
     BOOL = Converter(str2boo, BoolValidator())
     FLOAT = Converter(float, FloatValidator())
-    LIST = Converter(list, ListValidator())
-    DICT = Converter(dict, ListValidator())
+    LIST = Converter(ast.literal_eval, ListValidator())
+    DICT = Converter(ast.literal_eval, ListValidator())
     DIR = Converter(str, DirValidator())
     FILE = Converter(str, FileValidator())
 
 
 def prompt(message, type='STR', default=None, multiline=False, history=None):
-    if history is None:
-        history = FileHistory(os.path.join(path.HOME, '.prompt_history'))
+    history = FileHistory(history or os.path.join(path.HOME, '.prompt_history'))
     converter = getattr(PromptType, type)
     completer = WordCompleter(words=[], history=history)
     res = prompt_toolkit.prompt(message, default=default or '', history=history,
@@ -41,8 +46,7 @@ def prompt(message, type='STR', default=None, multiline=False, history=None):
 
 
 def prompt_list(message, type='STR', default=None, completions=None, multiline=False, history=None):
-    if history is None:
-        history = FileHistory(os.path.join(path.HOME, '.prompt_history'))
+    history = FileHistory(history or os.path.join(path.HOME, '.prompt_history'))
     converter = getattr(PromptType, type)
     completer = WordCompleter(words=completions, history=history)
     res = prompt_toolkit.prompt(message, default=default or '', history=history,
@@ -56,3 +60,5 @@ def prompt_path(message, root, type='DIR', recursion=False, default=None):
     res = prompt_toolkit.prompt(message, default=default or '', completer=completer,
                                 validator=converter.value.validator)
     return converter.value.convert(res)
+
+
