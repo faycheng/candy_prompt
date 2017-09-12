@@ -9,8 +9,6 @@ from prompt_toolkit.history import FileHistory
 from candy import path
 from candy.utils.convertor import str2boo
 
-history = FileHistory(os.path.join(path.HOME, '.templates', 'tpl.history'))
-
 
 class Converter(object):
     def __init__(self, convert_func, validator):
@@ -32,7 +30,9 @@ class PromptType(Enum):
     FILE = Converter(str, FileValidator())
 
 
-def prompt(message, type='STR', default=None, multiline=False):
+def prompt(message, type='STR', default=None, multiline=False, history=None):
+    if history is None:
+        history = FileHistory(os.path.join(path.HOME, '.prompt_history'))
     converter = getattr(PromptType, type)
     completer = WordCompleter(words=[], history=history)
     res = prompt_toolkit.prompt(message, default=default or '', history=history,
@@ -40,7 +40,9 @@ def prompt(message, type='STR', default=None, multiline=False):
     return converter.value.convert(res)
 
 
-def prompt_list(message, type='STR', default=None, completions=None, multiline=False):
+def prompt_list(message, type='STR', default=None, completions=None, multiline=False, history=None):
+    if history is None:
+        history = FileHistory(os.path.join(path.HOME, '.prompt_history'))
     converter = getattr(PromptType, type)
     completer = WordCompleter(words=completions, history=history)
     res = prompt_toolkit.prompt(message, default=default or '', history=history,
