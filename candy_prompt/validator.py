@@ -29,11 +29,10 @@ class FloatValidator(Validator):
 
 class BoolValidator(Validator):
     def validate(self, document):
-        from .consts import true_strs, false_strs
+        from candy.enums.boolstrs import BoolStrs
         text = document.text
-        bool_strs = [true_strs] + [false_strs]
-        if text.lower() not in bool_strs:
-            raise ValidationError('Input must be one of {}'.format(bool_strs))
+        if text.lower() not in BoolStrs.BOOL.value:
+            raise ValidationError('Input must be one of {}'.format(BoolStrs.BOOL.value))
 
 
 class ListValidator(Validator):
