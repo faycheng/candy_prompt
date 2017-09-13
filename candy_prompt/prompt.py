@@ -26,13 +26,17 @@ class PromptType(Enum):
     FILE = FileValidator()
 
 
+def _convert(data):
+    return ast.literal_eval(data) if type in ['INT', 'BOOL', 'FLOAT', 'LIST', 'DICT'] else data
+
+
 def prompt(message, type='STR', default=None, multiline=False, history=None):
     history = FileHistory(history or os.path.join(path.HOME, '.prompt_history'))
     converter = getattr(PromptType, type)
     completer = WordCompleter(words=[], history=history)
     res = prompt_toolkit.prompt(message, default=default or '', history=history,
                                 validator=converter.value, completer=completer, multiline=multiline)
-    return ast.literal_eval(res)
+    return _convert(res)
 
 
 def prompt_list(message, type='STR', default=None, completions=None, multiline=False, history=None):
@@ -41,7 +45,7 @@ def prompt_list(message, type='STR', default=None, completions=None, multiline=F
     completer = WordCompleter(words=completions, history=history)
     res = prompt_toolkit.prompt(message, default=default or '', history=history,
                                 validator=converter.value, completer=completer, multiline=multiline)
-    return ast.literal_eval(res)
+    return _convert(res)
 
 
 def prompt_path(message, root, type='DIR', recursion=False, default=None):
@@ -49,4 +53,4 @@ def prompt_path(message, root, type='DIR', recursion=False, default=None):
     completer = PathCompleter(root, match_type=type, recursion=recursion)
     res = prompt_toolkit.prompt(message, default=default or '', completer=completer,
                                 validator=converter.value)
-    return ast.literal_eval(res)
+    return _convert(res)
