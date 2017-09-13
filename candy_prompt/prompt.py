@@ -7,13 +7,12 @@ import ast
 # sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 import prompt_toolkit
+import candy_path as path
 
 from candy_prompt.completer import *
 from candy_prompt.validator import *
 from candy_prompt.history import PromptFileHistory as FileHistory
 from enum import Enum
-from candy import path
-
 
 class PromptType(Enum):
     STR = StrValidator()
